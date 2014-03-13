@@ -1,6 +1,6 @@
 # ANBlurredTableView
 
-ANBlurredTableView is a simple UITableView subclass for blurring and tinting a background image on scroll. (Wait for the huge 10MB .gif to load!)
+ANBlurredTableView is a simple UITableView subclass for blurring and tinting a background image on scroll.
 
 **Supports:** 
 - Blur-out on scroll down, blur-in on scroll up.
