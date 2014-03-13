@@ -1,6 +1,6 @@
 # ANBlurredTableView
 
-ANBlurredTableView is a simple UITableView subclass for blurring and tinting a background image on scroll. 
+ANBlurredTableView is a simple UITableView subclass for blurring and tinting a background image on scroll. (Wait for the huge 10MB .gif to load!)
 
 **Supports:** 
 - Blur-out on scroll down, blur-in on scroll up.
@@ -69,6 +69,7 @@ Consider setting animateTintAlpha to NO, or changing the blurTintColor to test o
 ## To Do
 - Cocoapods
 - Considering a method for changing the background image after one has already loaded. Should pre-render in the background before swapping out.
+- Shrink the gif to <4MB.
 
 ## Credits
 The image box blur algorithm is from [IndieAmbitions Blog](http://indieambitions.com/idevblogaday/perform-blur-vimage-accelerate-framework-tutorial/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+IndieAmbitions+%28Indie+Ambitions%29). UIImage category is modified from [ios-relatimeblur](https://github.com/alexdrone/ios-realtimeblur). 
