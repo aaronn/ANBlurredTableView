@@ -39,7 +39,7 @@
     [_tableView setAnimateTintAlpha:YES];
     [_tableView setStartTintAlpha:0.35f];
     [_tableView setEndTintAlpha:0.75f];
-    
+    _tableView.staticBlurredBackground = YES;
     // Our background image. After this point, ANBlurredTableView takes over and renders the frames.
     [_tableView setBackgroundImage:[UIImage imageNamed:@"beach.jpg"]];
     
