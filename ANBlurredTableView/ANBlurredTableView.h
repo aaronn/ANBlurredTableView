@@ -61,6 +61,16 @@
 @property (assign) BOOL animateTintAlpha;
 
 /**
+ Sets the background image to be the last image in frames.
+ */
+@property (assign) BOOL staticBlurredBackground;
+
+/**
+ Blur value for static image.
+ */
+@property (assign) CGFloat staticBlurValue;
+
+/**
  Only is used if animateOpacity is True
  The opacity to start animating at.
  Defaults to 0;

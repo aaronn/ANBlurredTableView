@@ -16,6 +16,7 @@
 #define DEFAULT_TINT_ALPHA_START 0.0
 #define DEFAULT_TINT_ALPHA_END 0.5
 #define DEFAULT_ANIMATION_DURATION 0.25
+#define DEFAULT_STATIC_BLUR 8.0
 
 
 @implementation ANBlurredTableView
@@ -61,6 +62,10 @@
     // If we have animateOnLoad as YES, default animation duration is 0.25s
     if (!_animationDuration)
     {_animationDuration = DEFAULT_ANIMATION_DURATION;}
+    
+    // Only used if staticBlurredBackground is YES
+    if (!_staticBlurValue)
+    {_staticBlurValue = DEFAULT_STATIC_BLUR;}
     
     // Process our opacity if animateOpacity is on.
     if (_animateTintAlpha)
@@ -123,37 +128,48 @@
     // Generate blur frames if a background is available.
     if (_backgroundImage)
     {
-        UIColor *processedTint = _blurTintColor;
-        // Start with startTint instead of the tintColor's alpha if animateTint is active.
-        if(_animateTintAlpha)
-        {processedTint = [_blurTintColor colorWithAlphaComponent:_startTintAlpha];}
+        if (_staticBlurredBackground) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIImage *downsampledImage = [self downsampleImage:_backgroundImage];
+                UIImage *image = [downsampledImage drn_boxblurImageWithBlur:_staticBlurValue withTintColor:_blurTintColor];
+                _backgroundImageView.image = image;
+            });
+        }
         
-        // Generate our first frame.
-        UIImage *firstFrame = [_backgroundImage drn_boxblurImageWithBlur:0.0 withTintColor:processedTint];
-        // Add our first frame to the array.
-        [_frames addObject:firstFrame];
-        [_backgroundImageView setImage:firstFrame];
-        
-        // Disable scroll blurring while rendering frames.
-        _rendering = YES;
-        [self renderBlurFramesWithCompletion:^{
+        else {
+            UIColor *processedTint = _blurTintColor;
+            // Start with startTint instead of the tintColor's alpha if animateTint is active.
+            if(_animateTintAlpha)
+            {processedTint = [_blurTintColor colorWithAlphaComponent:_startTintAlpha];}
             
-            // Animate in on completion.
-            if (_animateOnLoad){
-                CGFloat currentOffset = self.contentOffset.y;
-                for (int i = 0; i < (int)currentOffset; i++)
-                {
-                    // This slows down our loop.
-                    [NSThread sleepForTimeInterval:_animationDuration/currentOffset];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        {[self updateBackgroundBlurWithVerticalContentOffset:i];
-                        }
-                    });
+            // Generate our first frame.
+            UIImage *firstFrame = [_backgroundImage drn_boxblurImageWithBlur:0.0 withTintColor:processedTint];
+            // Add our first frame to the array.
+            [_frames addObject:firstFrame];
+            [_backgroundImageView setImage:firstFrame];
+            
+            // Disable scroll blurring while rendering frames.
+            _rendering = YES;
+            [self renderBlurFramesWithCompletion:^{
+                
+                // Animate in on completion.
+                if (_animateOnLoad){
+                    CGFloat currentOffset = self.contentOffset.y;
+                    for (int i = 0; i < (int)currentOffset; i++)
+                    {
+                        // This slows down our loop.
+                        [NSThread sleepForTimeInterval:_animationDuration/currentOffset];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            {[self updateBackgroundBlurWithVerticalContentOffset:i];
+                            }
+                        });
+                    }
                 }
-            }
-            // Done rendering. Re-enable scroll bluring.
-            _rendering = NO;
-        }];
+                
+                // Done rendering. Re-enable scroll bluring.
+                _rendering = NO;
+            }];            
+        }
     }
 }
 
@@ -222,6 +238,8 @@
 
 -(void)updateBackgroundBlurWithVerticalContentOffset:(CGFloat)contentOffset
 {
+    if (_staticBlurredBackground)
+        return;
     
     // Our current frame is based on our offset being lowered by a rounding value.
     NSInteger frame = (int)(contentOffset/_roundingValue);
